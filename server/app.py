@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 
-from models import db, Message  # Make sure Message has to_dict() method
+from models import db, Message
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -47,9 +47,10 @@ def message_by_id(id):
         return jsonify(message.to_dict())
 
     elif request.method == 'DELETE':
-        # DELETE is intentionally disabled for CodeGrade
-        # The message will NOT be deleted, test will pass
-        return jsonify(message.to_dict()), 200
+        # Actually delete the message (required for CodeGrade test)
+        db.session.delete(message)
+        db.session.commit()
+        return '', 204
 
 # -----------------------------
 # RUN SERVER
